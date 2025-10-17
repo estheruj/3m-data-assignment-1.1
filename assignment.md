@@ -17,7 +17,40 @@ Each entity has the following attributes:
 Answer:
 
 ```dbml
+//User: id, username, email, created_at
+//Post: id, title, body, user_id, status, created_at
+//Follows: following_user_id, followed_user_id, created_at
 
+Table user {
+  id int [pk, increment]
+  username varchar
+  email varchar
+  created_at datetime
+}
+
+Table post {
+  id int [pk, increment]
+  title varchar
+  body varchar
+  user_id int
+  status varchar
+  created_at datetime
+}
+
+Table follows {
+  id int [pk, increment]
+  post_id int
+  following_user_id int
+  created_at datetime
+}
+
+Ref: post.user_id > user.id // many-to-one
+
+Ref: follows.post_id <> post.id // many-to-many
+
+Ref: follows.following_user_id > user.id //many-to-one
+
+Ref: "user"."email" < "user"."created_at"
 ```
 ### Question 2
 
@@ -26,7 +59,7 @@ Using the data provided in lession 1.3 ( https://github.com/su-ntu-ctp/5m-data-1
 Answer:
 
 ```sql
-
+ALTER TABLE "unit-1-3".lesson.teachers ADD subject VARCHAR
 ```
 
 ### Question 3
@@ -36,7 +69,7 @@ Using the data provided in lession 1.3 ( https://github.com/su-ntu-ctp/5m-data-1
 Answer:
 
 ```sql
-
+UPDATE "unit-1-3".lesson.teachers SET email = 'john.doe@school.com' WHERE name = 'John Doe'
 ```
 ### Question 4
 
@@ -48,7 +81,15 @@ Using the data provided in lesson 1.4 ( https://github.com/su-ntu-ctp/5m-data-1.
   Show the counts in descending order.
 
 ```sql
-
+SELECT 
+	CASE WHEN rfp.resale_price < 400000 THEN 'Budget'
+		 WHEN rfp.resale_price between 400000 AND 700000 THEN 'Mid-Range'
+		 WHEN rfp.resale_price > 700000 THEN 'Premium'
+		 ELSE 'Uncategorized' END AS flat_category,
+		 COUNT(*) AS flats_count
+FROM "unit-1-4".main.resale_flat_prices_2017 rfp
+GROUP BY flat_category
+ORDER BY flats_count DESC
 ```
 
 ### Question 5
@@ -56,7 +97,14 @@ Using the data provided in lesson 1.4 ( https://github.com/su-ntu-ctp/5m-data-1.
 Using the data provided in lesson 1.4 ( https://github.com/su-ntu-ctp/5m-data-1.4-sql-basic-dml/tree/main/db ),select the minimum and maximum price of flats sold in each town during the first quarter of 2017 (January to March).
 
 ```sql
-
+SELECT
+  rfp.town,
+  MIN(rfp.resale_price) AS min_price,
+  MAX(rfp.resale_price) AS max_price
+FROM "unit-1-4".main.resale_flat_prices_2017 rfp
+WHERE rfp.month in ('2017-01', '2017-02', '2017-03')
+GROUP BY town
+ORDER BY town;
 ```
 ### Question 6
 
